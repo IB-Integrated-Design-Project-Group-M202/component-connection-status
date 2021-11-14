@@ -1,2 +1,6 @@
 # component-connection-status
 Tests the Connection Status of each Component on the Arduino Uno Wi-Fi Rev 2 Board
+
+Must be uploaded and ran before the robot enters the arena for the competition
+
+Remember to upload the Competition code subsequently
