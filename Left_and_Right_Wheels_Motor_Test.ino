@@ -32,9 +32,10 @@ void setup() {
   // Set a speed of 150 to start, where 0 is off & 255 is max speed
   leftMotor->setSpeed(150);
   rightMotor->setSpeed(150);
+  // Turn on motors
   leftMotor->run(FORWARD);
   rightMotor->run(FORWARD);
-  // turn on motors
+  // Turn off motors
   leftMotor->run(RELEASE);
   rightMotor->run(RELEASE);
 }
