@@ -90,12 +90,14 @@ void loop() {
   // Configure right motor to run forwards
   rightMotor->run(FORWARD);
   // Toggle speed to reach maximum from zero
+  // Turning to 200 max gives a 45 degree turn
   for (i=0; i<255; i++) {
     leftMotor->setSpeed(i);
     rightMotor->setSpeed(i);
     delay(10);
   }
   // Toggle speed to reach zero from maximum
+  // Turning to 200 max gives a 45 degree turn
   for (i=255; i!=0; i--) {
     leftMotor->setSpeed(i);
     rightMotor->setSpeed(i);
@@ -109,12 +111,14 @@ void loop() {
   // Configure right motor to run backwards
   rightMotor->run(BACKWARD);
   // Toggle speed to reach maximum from zero
+  // Turning to 200 max gives a 45 degree turn
   for (i=0; i<255; i++) {
     leftMotor->setSpeed(i);
     rightMotor->setSpeed(i);
     delay(10);
   }
   // Toggle speed to reach zero from maximum
+  // Turning to 200 max gives a 45 degree turn
   for (i=255; i!=0; i--) {
     leftMotor->setSpeed(i);
     rightMotor->setSpeed(i);
