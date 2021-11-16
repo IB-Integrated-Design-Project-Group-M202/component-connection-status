@@ -10,6 +10,7 @@ void setup() {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   Serial.begin(9600);
+  digitalWrite(trigPin, LOW);
 }
 
 // the loop function runs over and over again forever
@@ -17,8 +18,6 @@ void loop() {
   unsigned long currentMillis = millis();
   unsigned long time_elapsed = currentMillis - previousMillis;
   if ((time_elapsed <= 5) && (distance == 0)) {
-    digitalWrite(trigPin, LOW);
-    delay(2);
     digitalWrite(trigPin, HIGH);
     delay(10);
     digitalWrite(trigPin, LOW);
