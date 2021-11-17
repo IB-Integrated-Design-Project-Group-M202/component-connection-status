@@ -10,3 +10,5 @@ Digital I/O Pin assignment:
 
 2 - O/ Ultrasonic Trigger
 3 - I/ Ultrasonic Echo
+4 - Left Line Sensor
+7 - Right Line Sensor
