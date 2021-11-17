@@ -11,5 +11,5 @@ void loop() {
   // Continuously monitor the state of each line sensor.
   // Tell Serial to turn Left and Right according to which sensor is high.
   if (digitalRead(leftLineSensor) == HIGH) Serial.println(F("Turn Left"));
-  else if (digitalRead(leftLineSensor) == HIGH) Serial.println(F("Turn Right"));
+  else if (digitalRead(rightLineSensor) == HIGH) Serial.println(F("Turn Right"));
 }
