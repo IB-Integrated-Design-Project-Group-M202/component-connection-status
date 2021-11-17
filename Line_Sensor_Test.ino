@@ -5,6 +5,8 @@ void setup() {
   // Configure Line Sensors as Inputs
   pinMode(leftLineSensor, INPUT);
   pinMode(rightLineSensor, INPUT);
+  // Begin Serial connection at 9600 bps
+  Serial.begin(9600);
 }
 
 void loop() {
