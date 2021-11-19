@@ -38,14 +38,14 @@ void setup() {
 
   
 
-  while (readings < 10000) {
+  while (readings < 20000) {
     if (IMU.gyroscopeAvailable()) IMU.readGyroscope(x, y, z);
     x_total += x; y_total += y; z_total += z; readings += 1;
     x_offset = x_total / readings; y_offset = y_total / readings; z_offset = z_total / readings;
   }
 }
 
-unsigned long currentMillis, lastMillis = 0, elapsedMillis;
+unsigned long currentMicros, lastMicros = 0, elapsedMicros;
 
 void loop() {
   float x, y, z;
@@ -53,27 +53,20 @@ void loop() {
   if (IMU.gyroscopeAvailable()) {
     IMU.readGyroscope(x, y, z);
 
-    currentMillis = millis();
-    elapsedMillis = currentMillis-lastMillis;
+    currentMicros = micros();
+    elapsedMicros = currentMicros-lastMicros;
 
-    x_turn += (x - x_offset)*elapsedMillis/1000;
-    y_turn += (y - y_offset)*elapsedMillis/1000;
-    z_turn += (z - z_offset)*elapsedMillis/1000;
+    z_turn += (z - z_offset)*elapsedMicros/1000*180/160.7/1000;
 
-    delay(0);
+    delay(50);
 
-    lastMillis = currentMillis;
+    lastMicros = currentMicros;
     
-    Serial.print(x - x_offset);
-    Serial.print('\t');
-    Serial.print(y-y_offset);
-    Serial.print('\t');
     Serial.println(z-z_offset);
     Serial.print('\t');
-    Serial.print(x_turn);
-    Serial.print('\t');
-    Serial.println(y_turn);
-    Serial.print('\t');
     Serial.println(z_turn);
+    Serial.print('\t');
+    Serial.println(elapsedMicros);
+    
   }
 }
