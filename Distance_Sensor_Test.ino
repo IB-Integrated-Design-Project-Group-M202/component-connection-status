@@ -17,14 +17,6 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
   unsigned long time_elapsed = currentMillis - previousMillis;
-  if ((time_elapsed <= 5) && (distance == 0)) {
-    digitalWrite(trigPin, HIGH);
-    delay(10);
-    digitalWrite(trigPin, LOW);
-    duration = pulseIn(echoPin, HIGH);
-    distance = duration * 3.4 / 20;
-    if (distance < 2500) Serial.println(distance);
-  }
   if (time_elapsed >= 250) {
     // save the last time you blinked the LED
     previousMillis = currentMillis;
@@ -38,6 +30,12 @@ void loop() {
 
     // set the LED with the ledState of the variable:
     digitalWrite(ledPin, ledState);
-    distance = 0;
+    
+    digitalWrite(trigPin, HIGH);
+    delay(10);
+    digitalWrite(trigPin, LOW);
+    duration = pulseIn(echoPin, HIGH);
+    distance = duration * 3.4 / 20;
+    if (distance < 2500) Serial.println(distance);
   }
 }
