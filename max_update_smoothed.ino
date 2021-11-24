@@ -1,41 +1,73 @@
+/*
+Naming conventions:
+
+S1 - Sensor 1
+m1 - Maximum readout sequence 1
+
+d - Detect mode
+s - Stored value
 
 
-unsigned long s1m1tm1=0, s1m1tm2=0, s1m1t1=0, s1m1t2=0, lastt=0, gap=0, now=0;
-int s1 = 0;
-int s1m1=0;
-bool s1m1d = false;
+t1 - Time Stamp 1
+tm1 - Timer 1
+
+(1 for detection window, 2 for hold)
+*/
+
+//sensor interface
+const int IRs1 = A0, IRs2 = A1;
+//time parameters
 const unsigned long window_time=3000, hold_time=6500;
-const int IRs1 = A0;
+//time variables
+unsigned long s1m1tm1=0, s1m1tm2=0, s1m1t1=0, s1m1t2=0, lastt=0, gap=0, now=0;
+
+//sensor values
+int s1 = 0;
+//processed sensor values
+int s1m1=0, s1m1s=0;
+//loop phase
+bool s1m1d = false;
+//output
 String output="";
 
 void setup() {
     Serial.begin(2000000);
+    Serial.println("0\t0\t1023");
 }
+
 
 void loop() {
     s1 = analogRead(IRs1);
     now = micros();
+
+    //hold phase
     if(s1m1d==false){
         s1m1tm2=now-s1m1t2;
+        //timeout
         if(s1m1tm2>=hold_time){
+            //initiates detection window
             s1m1d=true;
             s1m1t1=now;
-            s1m1=s1m1-20;
-           // Serial.println("detect");
         }
     }
 
+    //detection phase
     if(s1m1d==true){
+        //maximum value update
         if(s1 > s1m1){
             s1m1 = s1;
             s1m1t1 = now;
         }
         //s1m1 = s1m1-1'
         s1m1tm1=now-s1m1t1;
+
+        //timeout
         if(s1m1tm1>=window_time){
-            //Serial.println("hold");
+            //initialises hold
             s1m1d=false;
             s1m1t2=now;
+            s1m1s=s1m1;
+            s1m1=0;
         }
 
     }
@@ -53,7 +85,7 @@ void loop() {
     Serial.print(s1m1);
     Serial.print('\t');   
     Serial.println(gap);*/
-    output = String(s1)+'\t'+String(s1m1);
+    output = String(s1)+'\t'+String(s1m1s);
     Serial.println(output);
     lastt=now;
 } 
