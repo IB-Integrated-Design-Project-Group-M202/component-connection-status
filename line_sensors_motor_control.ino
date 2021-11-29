@@ -5,14 +5,14 @@ bool accel = true, decel = false;
 
 //pin definition 
 #define lsc_pin 5
-#define lsl_pin A3
-#define lsr_pin A4
+#define lsl_pin A2
+#define lsr_pin A3
 
 // Global variables and definitions for motors
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); // Create the motor shield object with the default I2C address
 Adafruit_DCMotor *leftMotor = AFMS.getMotor(1); // Select and configure port M1
 Adafruit_DCMotor *rightMotor = AFMS.getMotor(2); // Select and configure port M2
-uint8_t centreSpeed = 0, leftSpeed = 0, rightSpeed = 0, speed_difference = 0, leftDirection = FORWARD, rightDirection = FORWARD;
+uint8_t centreSpeed = 200, leftSpeed = 0, rightSpeed = 0, speed_difference = 0, leftDirection = FORWARD, rightDirection = FORWARD;
 
 //sensor readouts
 int lsc=0, lsl=0, lsr=0;
@@ -31,8 +31,8 @@ bool on_line=false;
 bool junction=false;
 
 //PID parameters
-const float Kp=0.2;
-const float Ki=0.01;
+const float Kp=0.5;
+const float Ki=0.001;
 const float Kd=0.01;
 
 //PID variables
@@ -81,9 +81,13 @@ void if_junction(){
 } 
 
 void setup(){
+  if (!AFMS.begin()) { // Check whether the motor shield is properly connected
+    while (1);
+  }
   pinMode(lsc_pin, INPUT);
   pinMode(lsl_pin, INPUT);
   pinMode(lsr_pin, INPUT);
+  //Serial.begin(9600);
 }
 
 
@@ -100,9 +104,18 @@ void loop(){
     speed_difference=max(min((Kp*P+Ki*I+Kd*D), 45), -45);
     leftSpeed=centreSpeed - speed_difference;
     rightSpeed=centreSpeed + speed_difference;
-    
-    leftMotor->run(leftDirection);
-    rightMotor->run(rightDirection);
+    if_on_line();
+
     leftMotor->setSpeed(leftSpeed);
     rightMotor->setSpeed(rightSpeed);
+    leftMotor->run(leftDirection);
+    rightMotor->run(rightDirection);
+
+
+  
+    
+    //Serial.print(String(lsc*1023)+"\t"+String(lsl)+"\t"+String(lsr)+'\t');
+    //Serial.println(String(lsc*1023)+"\t"+String(lsl_mapped)+"\t"+String(lsr_mapped));
+    //Serial.print(String(P)+"\t"+String(I)+"\t"+String(D)+'\t');
+    //Serial.println(String(leftSpeed)+"\t"+String(rightSpeed)+"\t"+String(on_line));
 }
