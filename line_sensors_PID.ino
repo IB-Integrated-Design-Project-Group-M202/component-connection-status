@@ -34,7 +34,8 @@ const float Kd=0;
 //PID variables
 int P=0, I=0, D=0, last_P=0;
 
-float speed_difference=0;
+int speed_difference=0;
+uint8_t left_motor_speed, right_motor_speed;
 
 
 
@@ -51,15 +52,6 @@ void update_linesensors(){
 
 }*/
 
-void if_on_line(){
-    update_linesensors();
-    if(lsc_mapped>=lsc_threshold){
-        on_line=true;
-    }
-    else{
-        on_line=false;
-    }
-}
 
 void reset_PID(){
     P=0;
@@ -67,6 +59,29 @@ void reset_PID(){
     D=0;
     last_P=0;
 }
+
+void if_on_line(){
+    update_linesensors();
+    if(lsc_mapped>=lsc_threshold){
+        if(on_line==false){
+            on_line=true;
+            reset_PID();
+        }
+    }
+    else{
+        on_line=false;
+    }
+}
+
+void if_junction(){
+    update_linesensors();
+    if(on_line==true && lsr_mapped>=lsr_threshold && lsr_mapped>=lsr_threshold){
+        junction=true;
+    }
+    else{
+        junction=false;
+    }
+} 
 
 void setup(){
     Serial.begin(9600);
@@ -88,6 +103,8 @@ void loop(){
     
     speed_difference=Kp*P+Ki*I+Kd*D;
 
+    left_motor_speed=centreSpeed - max(speed_difference, 45);
+    right_motor_speed=centreSpeed + max(speed_difference, 45);
 
     //Serial.println(String(lsc)+"\t"+String(lsl)+"\t"+String(lsr));
     Serial.println(String(lsc_mapped)+"\t"+String(lsl_mapped)+"\t"+String(lsr_mapped));
