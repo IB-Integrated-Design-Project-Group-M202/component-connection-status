@@ -1,4 +1,4 @@
-/*line sensor analogue*/
+
 #include <Adafruit_MotorShield.h>
 
 bool accel = true, decel = false;
@@ -9,18 +9,25 @@ Adafruit_MotorShield AFMS = Adafruit_MotorShield(); // Create the motor shield o
 Adafruit_DCMotor *leftMotor = AFMS.getMotor(1); // Select and configure port M1
 Adafruit_DCMotor *rightMotor = AFMS.getMotor(2); // Select and configure port M2
 uint8_t centreSpeed = 0, leftSpeed = 0, rightSpeed = 0, leftDirection = FORWARD, rightDirection = FORWARD;
+
 int speed_difference = 0;
 float gapf=0;
 //mode
 bool in_range=false;
+bool locked=false;
+//int in_range_indication=0;
+
 
 int leftSpeedv, rightSpeedv;
 
 
-//PID parameters
+//parameters
 const float Kp=0.04;
 const float Ki=0.001;
-const float Kd=0.01;
+const float Kd=0.1;
+const int in_range_threashold=550;
+const uint8_t approachSpeed=150;
+const uint8_t turnSpeed=150;
 
 //PID variables
 long P=0, I=0, D=0, last_P=0;/*
@@ -88,11 +95,12 @@ void IR_peak_update(){
 }
 
 void if_in_range(){
-    if(ssum>=700){
+    //in_range_indication=abs((s1m1saa-s1)*ssum / 100);
+    if(ssum>=in_range_threashold){
         if(in_range==false){
             in_range=true;
             reset_PID();
-            centreSpeed=120;
+            centreSpeed=approachSpeed;
         }
     }
     else{
@@ -109,10 +117,10 @@ void PID_update(){
         I=I+P*gapf/10;
         D=(P-last_P)/gapf;
         last_P=P;
-        speed_difference=max(min((Kp*P+Ki*I+Kd*D), 95), -95);
+        speed_difference=max(min((Kp*P+Ki*I+Kd*D), turnSpeed), -turnSpeed);
     }
     else{
-        speed_difference=95;
+        speed_difference=turnSpeed;
     }
     lastPID=now;
     leftSpeedv=centreSpeed-speed_difference;
@@ -188,9 +196,11 @@ void loop() {
         if_in_range();
         PID_update();
         motor_update();
-        Serial.print(String(ssum)+"\t"+String(sdiff)+'\t');
-        Serial.print(String(P)+"\t"+String(I)+"\t"+String(D)+'\t');
-        Serial.println(String(speed_difference)+"\t"+String(in_range*1024));
+        //Serial.print(String(s1m1saa)+"\t"+String(s2m1saa)+'\t');
+        //Serial.print(String(ssum)+"\t"+String(sdiff)+'\t');
+        //Serial.println(String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
+        //Serial.println(String(speed_difference)+"\t"+String(in_range*1024));
+        //Serial.println(String(in_range_indication)+"\t"+String(s1m1saa)+"\t"+String(s2m1saa)+'\t'+String(ssum)+"\t"+String(sdiff)+'\t'+String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
 
         //Serial.println(String(s1m1saa)+'\t'+String(s2m1saa)+'\t'+String(in_range*1023)+'\t'+String(speed_difference));
     }
