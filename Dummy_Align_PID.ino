@@ -4,7 +4,10 @@
 
 bool accel = true, decel = false;
 
-int distance=500;
+#define echoPin 2
+#define trigPin 3
+double distance;
+
 uint8_t ranging_index=0;
 
 // Global variables and definitions for motors
@@ -19,9 +22,11 @@ float gapf=0;
 bool in_range=false;
 bool locked=false;
 bool arrival=false;
+bool sequence_timeout=false;
 //int in_range_indication=0;
 
 unsigned long search_timer=0;
+unsigned long now_ms=0;
 
 
 int leftSpeedv, rightSpeedv;
@@ -35,7 +40,7 @@ const float Kd=0.1;
 const int in_range_threashold=550;
 const uint8_t approachSpeed=150;
 const uint8_t turnSpeed=150;
-const unsigned long search_timeout=20000000;
+const unsigned long search_timeout=20000;
 
 //PID variables
 long P=0, I=0, D=0, last_P=0;/*
@@ -84,7 +89,7 @@ void if_arrival(){
 
     if(ranging_index%16==0){
         distance=measure_distance_mm();
-        if(distance<=150){
+        if(distance<=180 and distance!=-1){
             arrival=true;
         }
     }
@@ -184,13 +189,16 @@ void setup() {
   }
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
+    HCSR04.begin(trigPin, echoPin);
+  digitalWrite(trigPin, LOW);
 }
 
 
 void loop() {
-    search_timer=micros();
-
-    while(arrival=false & (micros()-search_timer<=search_timeout)){
+    //Serial.println("loop"+String(sequence_timeout)+String(distance)+String(ranging_index));
+    search_timer=millis();
+    sequence_timeout=false;
+    while(arrival==false and sequence_timeout==false){
         IR_readout();
 
         IR_peak_update();
@@ -219,14 +227,18 @@ void loop() {
             ssum=s1m1saa+s2m1saa;
             sdiff=s1m1saa-s2m1saa;
             if_in_range();
+            if_arrival();
             PID_update();
             motor_update();
-            Serial.println("search");
+            if(((now_ms-search_timer)>=search_timeout & in_range==false)){
+              sequence_timeout=true;
+            }
+            Serial.println("search"+String(distance));
             //Serial.print(String(s1m1saa)+"\t"+String(s2m1saa)+'\t');
             //Serial.print(String(ssum)+"\t"+String(sdiff)+'\t');
             //Serial.println(String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
             //Serial.println(String(speed_difference)+"\t"+String(in_range*1024));
-            //Serial.println(String(in_range_indication)+"\t"+String(s1m1saa)+"\t"+String(s2m1saa)+'\t'+String(ssum)+"\t"+String(sdiff)+'\t'+String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
+            Serial.println(String(s1m1saa)+"\t"+String(s2m1saa)+'\t'+String(ssum)+"\t"+String(sdiff)+'\t'+String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
 
             //Serial.println(String(s1m1saa)+'\t'+String(s2m1saa)+'\t'+String(in_range*1023)+'\t'+String(speed_difference));
         }
@@ -241,20 +253,45 @@ void loop() {
             s2m1s=s2m1;
         }
 
+        now_ms=millis();
     }
-
-    search_timer=micros();
-
-    while(distance>=200 & (micros()<=search_timer+4000000)){
-        search_timer=micros();
-        distance=measure_distance_mm()
+    search_timer=millis();
+    sequence_timeout=false;
+    while(distance>=200 & sequence_timeout==false){
+        distance=measure_distance_mm();
         delay(10);
-        Serial.println("walk");
+        Serial.println("walk"+String(distance));
         leftSpeedv=240;
         rightSpeedv=200;
         motor_update();
-    };
+        now_ms=millis();
+        if(((now_ms-search_timer)>=2000)){
+            sequence_timeout=true;
+        }
 
+    }
     
+    
+
+    if_arrival();
+    if(arrival==true){
+        leftSpeed=0;
+        rightSpeed=0;
+        motor_update();
+    }
+    
+    if_in_range();
+    if(in_range=true){
+        delay(5000);
+        //put identification here and delete delay
+    }
+
+    arrival=false;
+    leftSpeedv=-200;
+    rightSpeedv=150;
+    leftSpeed=abs(leftSpeedv);
+    rightSpeed=abs(rightSpeedv);
+    motor_update();
+    delay(3000);
 
 } 
