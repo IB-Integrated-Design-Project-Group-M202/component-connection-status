@@ -1,8 +1,11 @@
-
 #include <Adafruit_MotorShield.h>
+#include <Arduino_LSM6DS3.h>
+#include <HCSR04.h>
 
 bool accel = true, decel = false;
 
+int distance=500;
+uint8_t ranging_index=0;
 
 // Global variables and definitions for motors
 Adafruit_MotorShield AFMS = Adafruit_MotorShield(); // Create the motor shield object with the default I2C address
@@ -15,10 +18,14 @@ float gapf=0;
 //mode
 bool in_range=false;
 bool locked=false;
+bool arrival=false;
 //int in_range_indication=0;
+
+unsigned long search_timer=0;
 
 
 int leftSpeedv, rightSpeedv;
+
 
 
 //parameters
@@ -28,6 +35,7 @@ const float Kd=0.1;
 const int in_range_threashold=550;
 const uint8_t approachSpeed=150;
 const uint8_t turnSpeed=150;
+const unsigned long search_timeout=20000000;
 
 //PID variables
 long P=0, I=0, D=0, last_P=0;/*
@@ -67,6 +75,22 @@ bool s1m1d = false;
 //output
 String output="";
 
+double measure_distance_mm() {
+    double* distances = HCSR04.measureDistanceMm();
+    return distances[0];
+}
+
+void if_arrival(){
+
+    if(ranging_index%16==0){
+        distance=measure_distance_mm();
+        if(distance<=150){
+            arrival=true;
+        }
+    }
+    ranging_index++;
+}
+
 void reset_PID(){
     P=0;
     I=0;
@@ -78,7 +102,6 @@ void IR_readout(){
     s1 = analogRead(IRs1);
     s2 = analogRead(IRs2);
     now = micros();
-
 }
 
 void IR_peak_update(){
@@ -165,57 +188,73 @@ void setup() {
 
 
 void loop() {
+    search_timer=micros();
 
-    IR_readout();
+    while(arrival=false & (micros()-search_timer<=search_timeout)){
+        IR_readout();
 
-    IR_peak_update();
+        IR_peak_update();
 
-    s1m1tm1=now-s1m1t1;
+        s1m1tm1=now-s1m1t1;
 
-    //timeout
-    if(s1m1tm1>=window_time){
-        //initialises hold
-        s1m1d=false;
-        s1m1=0;
-        s2m1=0;
-
-        s1m1sat=s1m1sat-s1m1sa[a_i];
-        s2m1sat=s2m1sat-s2m1sa[a_i];
-        s1m1sat+=s1m1s;
-        s2m1sat+=s2m1s;
-        s1m1sa[a_i]=s1m1s;
-        s2m1sa[a_i]=s2m1s;
-        a_i+=1;
-        if (a_i>=a_size){
-            a_i=0;
-        }
-        s1m1saa=s1m1sat/a_size;
-        s2m1saa=s2m1sat/a_size;
-        ssum=s1m1saa+s2m1saa;
-        sdiff=s1m1saa-s2m1saa;
-        if_in_range();
-        PID_update();
-        motor_update();
-        //Serial.print(String(s1m1saa)+"\t"+String(s2m1saa)+'\t');
-        //Serial.print(String(ssum)+"\t"+String(sdiff)+'\t');
-        //Serial.println(String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
-        //Serial.println(String(speed_difference)+"\t"+String(in_range*1024));
-        //Serial.println(String(in_range_indication)+"\t"+String(s1m1saa)+"\t"+String(s2m1saa)+'\t'+String(ssum)+"\t"+String(sdiff)+'\t'+String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
-
-        //Serial.println(String(s1m1saa)+'\t'+String(s2m1saa)+'\t'+String(in_range*1023)+'\t'+String(speed_difference));
-    }
-
-    s1m1tm2=now-s1m1t2;
         //timeout
-    if(s1m1tm2>=hold_time){
-            //initiates detection window
-        s1m1d=true;
-        s1m1t2=now;
-        s1m1s=s1m1;
-        s2m1s=s2m1;
+        if(s1m1tm1>=window_time){
+            //initialises hold
+            s1m1d=false;
+            s1m1=0;
+            s2m1=0;
+
+            s1m1sat=s1m1sat-s1m1sa[a_i];
+            s2m1sat=s2m1sat-s2m1sa[a_i];
+            s1m1sat+=s1m1s;
+            s2m1sat+=s2m1s;
+            s1m1sa[a_i]=s1m1s;
+            s2m1sa[a_i]=s2m1s;
+            a_i+=1;
+            if (a_i>=a_size){
+                a_i=0;
+            }
+            s1m1saa=s1m1sat/a_size;
+            s2m1saa=s2m1sat/a_size;
+            ssum=s1m1saa+s2m1saa;
+            sdiff=s1m1saa-s2m1saa;
+            if_in_range();
+            PID_update();
+            motor_update();
+            Serial.println("search");
+            //Serial.print(String(s1m1saa)+"\t"+String(s2m1saa)+'\t');
+            //Serial.print(String(ssum)+"\t"+String(sdiff)+'\t');
+            //Serial.println(String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
+            //Serial.println(String(speed_difference)+"\t"+String(in_range*1024));
+            //Serial.println(String(in_range_indication)+"\t"+String(s1m1saa)+"\t"+String(s2m1saa)+'\t'+String(ssum)+"\t"+String(sdiff)+'\t'+String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
+
+            //Serial.println(String(s1m1saa)+'\t'+String(s2m1saa)+'\t'+String(in_range*1023)+'\t'+String(speed_difference));
+        }
+
+        s1m1tm2=now-s1m1t2;
+            //timeout
+        if(s1m1tm2>=hold_time){
+                //initiates detection window
+            s1m1d=true;
+            s1m1t2=now;
+            s1m1s=s1m1;
+            s2m1s=s2m1;
+        }
+
     }
 
-    //output = String(s1)+'\t'+String(s1m1s);
+    search_timer=micros();
+
+    while(distance>=200 & (micros()<=search_timer+4000000)){
+        search_timer=micros();
+        distance=measure_distance_mm()
+        delay(10);
+        Serial.println("walk");
+        leftSpeedv=240;
+        rightSpeedv=200;
+        motor_update();
+    };
+
     
 
 } 
