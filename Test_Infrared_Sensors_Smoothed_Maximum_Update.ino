@@ -27,8 +27,6 @@ int s1 = 0;
 int s1m1=0, s1m1s=0;
 //loop phase
 bool s1m1d = false;
-//output
-String output="";
 
 void setup() {
     Serial.begin(2000000);
