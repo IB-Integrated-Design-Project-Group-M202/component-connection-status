@@ -72,9 +72,8 @@ void loop() {
 
     }
 
-  
-    //gap=now-lastt;
-    /*Serial.print(s1m1tm1);
+    gap=now-lastt;
+    Serial.print(s1m1tm1);
     Serial.print('\t');
     Serial.print(s1m1tm2);
     Serial.print('\t');
@@ -84,8 +83,8 @@ void loop() {
     Serial.print('\t');
     Serial.print(s1m1);
     Serial.print('\t');   
-    Serial.println(gap);*/
-    output = String(s1)+'\t'+String(s1m1s);
-    Serial.println(output);
+    Serial.print(s1m1s);
+    Serial.print('\t'); 
+    Serial.println(gap);
     lastt=now;
 } 
