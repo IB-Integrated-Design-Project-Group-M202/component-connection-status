@@ -128,7 +128,7 @@ void IR_peak_update(){
 }
 
 void if_in_range(){
-    //in_range_indication=abs((s1m1saa-s1)*ssum / 100);
+    in_range_indication=abs((s1m1saa-s1)*ssum / 100);
     if(ssum>=in_range_threashold){
         if(in_range==false){
             in_range=true;
@@ -184,25 +184,25 @@ void motor_update(){
 }
 
 void setup() {
-    //Serial.begin(9600);
+    Serial.begin(9600);
     for (int i = 0; i < a_size; i++){
         s1m1sa[i]=0;
         s2m1sa[i]=0;
     }
-    //Serial.println("0\t0\t0\t0\t-1023\t1023");
+    Serial.println("0\t0\t0\t0\t-1023\t1023");
   if (!AFMS.begin()) { // Check whether the motor shield is properly connected
     while (1);
   }
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
-    HCSR04.begin(trigPin, echoPin);
+  HCSR04.begin(trigPin, echoPin);
   digitalWrite(trigPin, LOW);
 }
 
 
 void search(){
 
-    //Serial.println("loop"+String(sequence_timeout)+String(distance)+String(ranging_index));
+    Serial.println("loop"+String(sequence_timeout)+String(distance)+String(ranging_index));
     search_timer=millis();
     sequence_timeout=false;
     while(stop==false and sequence_timeout==false){
@@ -240,20 +240,30 @@ void search(){
             if(((now_ms-search_timer)>=search_timeout & in_range==false)){
               sequence_timeout=true;
             }
-            //Serial.println("search"+String(distance));
-            //Serial.print(String(s1m1saa)+"\t"+String(s2m1saa)+'\t');
-            //Serial.print(String(ssum)+"\t"+String(sdiff)+'\t');
-            //Serial.println(String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
-            //Serial.println(String(speed_difference)+"\t"+String(in_range*1024));
-           // Serial.println(String(s1m1saa)+"\t"+String(s2m1saa)+'\t'+String(ssum)+"\t"+String(sdiff)+'\t'+String(P)+"\t"+String(I/1000)+"\t"+String(D)+'\t');
-
-            //Serial.println(String(s1m1saa)+'\t'+String(s2m1saa)+'\t'+String(in_range*1023)+'\t'+String(speed_difference));
+            Serial.println("search"+String(distance));
+            Serial.print(s1m1saa);
+            Serial.print('\t');
+            Serial.print(s2m1saa);
+            Serial.print('\t');
+            Serial.print(ssum);
+            Serial.print('\t');
+            Serial.print(sdiff);
+            Serial.print('\t');
+            Serial.print(P);
+            Serial.print("\t");
+            Serial.print(I/1000);
+            Serial.print("\t");
+            Serial.print(D);
+            Serial.print('\t');
+            Serial.print(in_range*1023);
+            Serial.print('\t');
+            Serial.println(speed_difference);
         }
 
         s1m1tm2=now-s1m1t2;
-            //timeout
+        //timeout
         if(s1m1tm2>=hold_time){
-                //initiates detection window
+            //initiates detection window
             s1m1d=true;
             s1m1t2=now;
             s1m1s=s1m1;
@@ -269,7 +279,7 @@ void walk(){
     sequence_timeout=false;
     while(stop==false & sequence_timeout==false){
         if_stop();
-        //Serial.println("walk"+String(distance));
+        Serial.println("walk"+String(distance));
         leftSpeedv=245;
         rightSpeedv=220;
         motor_update();
