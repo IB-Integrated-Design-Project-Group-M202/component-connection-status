@@ -55,7 +55,6 @@ void loop() {
         //initialises hold
         s1m1d=false;
         s1m1=0;
-        Serial.println(s1m1s);
     }
 
     s1m1tm2=now-s1m1t2;
