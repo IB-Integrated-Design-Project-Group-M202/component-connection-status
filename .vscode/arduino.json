@@ -1,0 +1,6 @@
+{
+    "board": "arduino:megaavr:uno2018",
+    "port": "COM8",
+    "sketch": "Distance_Sensor_Test.ino",
+    "configuration": "mode=on"
+}
