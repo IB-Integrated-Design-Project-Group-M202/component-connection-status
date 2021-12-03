@@ -31,8 +31,6 @@ int s1 = 0, s2 =0;
 int s1m1=0, s1m1s=0, s2m1=0, s2m1s=0;
 //loop phase
 bool s1m1d = false;
-//output
-String output="";
 
 void setup() {
     Serial.begin(2000000);
@@ -80,7 +78,9 @@ void loop() {
         }
         s1m1saa=s1m1sat/a_size;
         s2m1saa=s2m1sat/a_size;
-        Serial.println(String(s1m1saa)+'\t'+String(s2m1saa));
+        Serial.print(s1m1saa);
+        Serial.print('\t');
+        Serial.println(s2m1saa);
     }
 
     s1m1tm2=now-s1m1t2;
@@ -92,8 +92,4 @@ void loop() {
         s1m1s=s1m1;
         s2m1s=s2m1;
     }
-
-    //output = String(s1)+'\t'+String(s1m1s);
-    
-
 } 
