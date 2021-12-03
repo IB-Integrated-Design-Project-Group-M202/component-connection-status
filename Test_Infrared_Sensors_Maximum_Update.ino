@@ -4,7 +4,6 @@ int s1m1=0, s1m1s=0;
 bool s1m1d = false;
 const unsigned long window_time=3000, hold_time=6500;
 const int IRs1 = A0;
-String output="";
 
 void setup() {
     Serial.begin(2000000);
