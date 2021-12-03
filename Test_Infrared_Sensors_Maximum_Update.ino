@@ -1,5 +1,3 @@
-
-
 unsigned long s1m1tm1=0, s1m1tm2=0, s1m1t1=0, s1m1t2=0, lastt=0, gap=0, now=0;
 int s1 = 0;
 int s1m1=0, s1m1s=0;
@@ -34,7 +32,6 @@ void loop() {
             s1m1 = s1;
             s1m1t1 = now;
         }
-        //s1m1 = s1m1-1'
         s1m1tm1=now-s1m1t1;
 
         //timeout
