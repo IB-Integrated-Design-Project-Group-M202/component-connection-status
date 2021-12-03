@@ -112,7 +112,7 @@ void loop(){
     Serial.print("\t");
     Serial.print(lsc*1023);
     Serial.print("\t");
-    Serial.print(on_line);
+    Serial.print(on_line*1023);
     Serial.print("\t");
     Serial.print(lsr);
     Serial.print("\t");
