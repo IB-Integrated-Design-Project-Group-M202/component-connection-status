@@ -1,5 +1,5 @@
 // Define Electrical parameters
-const int leftLineSensor = 4, rightLineSensor = 7;
+const int leftLineSensor = A2, rightLineSensor = A3;
 
 void setup() {
   // Configure Line Sensors as Inputs
