@@ -6,7 +6,7 @@ bool accel = true, decel = false;
 uint8_t centreSpeed=0; //average speed of left and right wheel for updatting the motors
 
 //pin definition 
-const int lsc_pin=5,  lsl_pin=A3, lsr_pin=A4;
+const int lsc_pin=5,  lsl_pin=A2, lsr_pin=A3;
 
 
 //sensor readouts
@@ -104,7 +104,19 @@ void loop(){
     left_motor_speed=centreSpeed - speed_difference;
     right_motor_speed=centreSpeed + speed_difference;
 
-    //Serial.println(String(lsc*1023)+"\t"+String(lsl)+"\t"+String(lsr));
-    //Serial.println(String(lsc*1023)+"\t"+String(lsl_mapped)+"\t"+String(lsr_mapped));
-    Serial.println(String(left_motor_speed)+"\t"+String(right_motor_speed)+"\t"+String(on_line));
+    Serial.print(lsl);
+    Serial.print("\t");
+    Serial.print(lsl_mapped);
+    Serial.print("\t");
+    Serial.print(left_motor_speed);
+    Serial.print("\t");
+    Serial.print(lsc*1023);
+    Serial.print("\t");
+    Serial.print(on_line);
+    Serial.print("\t");
+    Serial.print(lsr);
+    Serial.print("\t");
+    Serial.print(lsr_mapped);
+    Serial.print("\t");
+    Serial.println(right_motor_speed);
 }
