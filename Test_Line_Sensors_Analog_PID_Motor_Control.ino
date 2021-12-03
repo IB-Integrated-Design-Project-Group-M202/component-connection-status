@@ -4,7 +4,7 @@
 bool accel = true, decel = false;
 
 //pin definition 
-#define lsc_pin 5
+#define lsc_pin 7
 #define lsl_pin A2
 #define lsr_pin A3
 
@@ -126,7 +126,6 @@ void setup(){
   pinMode(lsc_pin, INPUT);
   pinMode(lsl_pin, INPUT);
   pinMode(lsr_pin, INPUT);
-  //Serial.begin(9600);
 }
 
 
@@ -143,14 +142,6 @@ void loop(){
     rightSpeed=centreSpeed + speed_difference;
     if_on_line();
     motor_update();
-    if (millis()-off_line_timer_ms>=off_line_timeout)
-    {
-        find_line();
-    }
+    if (millis()-off_line_timer_ms>=off_line_timeout) find_line();
     
-  
-    //Serial.print(String(lsc*1023)+"\t"+String(lsl)+"\t"+String(lsr)+'\t');
-    //Serial.println(String(lsc*1023)+"\t"+String(lsl_mapped)+"\t"+String(lsr_mapped));
-    //Serial.print(String(P)+"\t"+String(I)+"\t"+String(D)+'\t');
-    //Serial.println(String(leftSpeed)+"\t"+String(rightSpeed)+"\t"+String(on_line));
 }
