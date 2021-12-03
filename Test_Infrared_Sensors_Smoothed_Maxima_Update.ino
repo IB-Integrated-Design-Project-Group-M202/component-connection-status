@@ -23,7 +23,7 @@ int s1m1sa[a_size], s2m1sa[a_size];
 int a_i=0;
 int s1m1sat=0, s1m1saa=0, s2m1sat=0, s2m1saa=0;
 //time variables
-unsigned long s1m1tm1=0, s1m1tm2=0, s1m1t1=0, s1m1t2=0, s2m1tm1=0, s2m1tm2=0, s2m1t1=0, s2m1t2=0, lastt=0, gap=0, now=0;
+unsigned long s1m1tm1=0, s1m1tm2=0, s1m1t1=0, s1m1t2=0, s2m1tm1=0, s2m1tm2=0, s2m1t1=0, s2m1t2=0, now=0;
 
 //sensor values
 int s1 = 0, s2 =0;
