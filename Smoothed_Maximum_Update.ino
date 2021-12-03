@@ -21,7 +21,7 @@ void loop() {
             s1m1d=true;
             s1m1t1=now;
             s1m1=s1m1-20;
-           // Serial.println("detect");
+            Serial.println("detect");
         }
     }
 
@@ -30,10 +30,9 @@ void loop() {
             s1m1 = s1;
             s1m1t1 = now;
         }
-        //s1m1 = s1m1-1'
         s1m1tm1=now-s1m1t1;
         if(s1m1tm1>=window_time){
-            //Serial.println("hold");
+            Serial.println("hold");
             s1m1d=false;
             s1m1t2=now;
         }
@@ -41,8 +40,8 @@ void loop() {
     }
 
   
-    //gap=now-lastt;
-    /*Serial.print(s1m1tm1);
+    gap=now-lastt;
+    Serial.print(s1m1tm1);
     Serial.print('\t');
     Serial.print(s1m1tm2);
     Serial.print('\t');
@@ -52,8 +51,10 @@ void loop() {
     Serial.print('\t');
     Serial.print(s1m1);
     Serial.print('\t');   
-    Serial.println(gap);*/
-    output = String(s1)+'\t'+String(s1m1);
-    Serial.println(output);
+    Serial.print(gap);
+    Serial.print('\t');
+    Serial.print(s1);
+    Serial.print('\t');
+    Serail.println(s1m1);
     lastt=now;
-} 
+}
