@@ -1,9 +1,20 @@
-/* Tomasz Twardoch Nov 2021*/
+/*
+  Arduino LSM6DS3 - Simple Gyroscope
+
+  This example reads the gyroscope values from the LSM6DS3
+  sensor and continuously prints them to the Serial Monitor
+  or Serial Plotter.
+
+  The circuit:
+  - Arduino Uno WiFi Rev 2 or Arduino Nano 33 IoT
+
+  created 10 Jul 2019
+  by Riccardo Rizzo
+
+  This example code is in the public domain.
+*/
 
 #include <Arduino_LSM6DS3.h>
-
-int readings = 0;
-float x, y, angle, angle_offset = 0, angle_turned = 0, angle_total = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -21,38 +32,18 @@ void setup() {
   Serial.println();
   Serial.println("Gyroscope in degrees/second");
   Serial.println("X\tY\tZ");
-
-  
-
-  while (readings < 20000) {
-    if (IMU.gyroscopeAvailable()) IMU.readGyroscope(x, y, angle);
-    angle_total += angle; readings += 1;
-    angle_offset = angle_total / readings;
-  }
 }
 
-unsigned long currentMicros, lastMicros = 0, elapsedMicros;
-
 void loop() {
-  float x, y, angle;
+  float x, y, z;
 
   if (IMU.gyroscopeAvailable()) {
-    IMU.readGyroscope(x, y, angle);
+    IMU.readGyroscope(x, y, z);
 
-    currentMicros = micros();
-    elapsedMicros = currentMicros-lastMicros;
-
-    angle_turned += (angle - angle_offset)*elapsedMicros/1000*180/160.7/1000;
-
-    delay(50);
-
-    lastMicros = currentMicros;
-    
-    Serial.println(angle-angle_offset);
+    Serial.print(x);
     Serial.print('\t');
-    Serial.println(angle_turned);
+    Serial.print(y);
     Serial.print('\t');
-    Serial.println(elapsedMicros);
-    
+    Serial.println(z);
   }
 }
